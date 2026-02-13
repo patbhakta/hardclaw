@@ -57,8 +57,6 @@ services:
     env_file: .env
     environment:
       - NODE_ENV=production
-      - ANTHROPIC_API_BASE=http://litellm:4000
-      - ANTHROPIC_API_KEY=${LITELLM_MASTER_KEY}
       - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
       - OPENCLAW_GATEWAY_CERT=/home/node/.openclaw/gateway.crt
       - OPENCLAW_GATEWAY_KEY=/home/node/.openclaw/gateway.key
