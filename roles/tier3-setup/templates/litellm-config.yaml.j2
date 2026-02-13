@@ -18,11 +18,13 @@ model_list:
       api_base: "{{ llm_url }}"
       api_key: "os.environ/ZAI_API_KEY"
 
-  # Catch-all (Handles any other models passed)
+  # Catch-all (Handles any other models passed, using the provider selected during deploy)
   - model_name: "*"
     litellm_params:
-      model: "zai/{{ llm_model if not llm_model.startswith('zai/') else llm_model[4:] }}"
+      model: "{% if llm_provider == 'z.ai' %}zai/{% elif llm_provider == 'gemini' %}{% elif llm_provider == 'ollama' %}ollama/{% elif llm_provider == 'anthropic' %}anthropic/{% elif llm_provider == 'openai' %}openai/{% elif llm_provider == 'openrouter' %}openrouter/{% else %}{{ llm_provider }}/{% endif %}{{ llm_model if (llm_provider != 'z.ai' or not llm_model.startswith('zai/')) else llm_model[4:] }}"
+      {% if llm_url and llm_provider != 'gemini' %}
       api_base: "{{ llm_url }}"
+      {% endif %}
       api_key: "os.environ/{% if llm_provider == 'z.ai' %}ZAI_API_KEY{% else %}TARGET_LLM_KEY{% endif %}"
 
 general_settings:
