@@ -32,6 +32,11 @@
     group: "{{ openclaw_user }}"
     mode: '0600'
 
+- name: Initialize Secret Variables
+  set_fact:
+    existing_master_key: ""
+    existing_openclaw_token: ""
+
 - name: Check for existing secrets in .env
   slurp:
     src: "{{ docker_dir }}/.env"
@@ -51,12 +56,12 @@
 - name: Generate LiteLLM Master Key (if missing)
   command: "openssl rand -base64 32"
   register: litellm_master_key_gen
-  when: existing_master_key | default('') | length == 0
+  when: existing_master_key | length == 0
 
 - name: Generate OpenClaw Gateway Token (if missing)
   command: "openssl rand -base64 32"
   register: openclaw_token_gen
-  when: existing_openclaw_token | default('') | length == 0
+  when: existing_openclaw_token | length == 0
 
 - name: Set Final Secrets
   set_fact:
