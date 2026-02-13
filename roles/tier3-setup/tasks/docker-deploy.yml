@@ -16,6 +16,7 @@
   loop:
     - "{{ docker_dir }}"
     - "{{ data_dir }}"
+    - "{{ data_dir }}/sessions"
     - "{{ data_dir }}/agents"
     - "{{ data_dir }}/agents/files"
     - "{{ data_dir }}/agents/files/sessions"
@@ -28,6 +29,16 @@
   file:
     path: "{{ workspace_dir }}"
     mode: '0755'
+
+- name: Fix Podman Internal Ownership (Rootless)
+  command: "podman unshare chown -R 1000:1000 {{ item }}"
+  loop:
+    - "{{ data_dir }}"
+    - "{{ ssh_dir }}"
+  become: true
+  become_user: "{{ openclaw_user }}"
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][openclaw_user][1] }}"
 
 - name: Create LiteLLM Config
   template:
