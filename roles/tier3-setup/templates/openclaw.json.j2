@@ -37,7 +37,7 @@
     "providers": {
       "z-ai": {
         "baseUrl": "http://litellm:4000/v1",
-        "apiKey": "${LITELLM_MASTER_KEY}",
+        "apiKey": "{{ litellm_key }}",
         "api": "openai-completions",
         "models": [
           { "id": "glm-4.7", "name": "Z.ai GLM 4.7", "reasoning": true, "input": ["text", "image"],

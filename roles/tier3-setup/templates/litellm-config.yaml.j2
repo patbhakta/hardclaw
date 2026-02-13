@@ -3,19 +3,19 @@ model_list:
   - model_name: "glm-4.7"
     litellm_params:
       model: "zai/glm-4.7"
-      api_base: "{{ llm_url }}"
+      api_base: "{% if not llm_url.endswith('/') %}{{ llm_url }}/{% else %}{{ llm_url }}{% endif %}"
       api_key: "os.environ/ZAI_API_KEY"
 
   - model_name: "glm-4.5v"
     litellm_params:
       model: "zai/glm-4.5v"
-      api_base: "{{ llm_url }}"
+      api_base: "{% if not llm_url.endswith('/') %}{{ llm_url }}/{% else %}{{ llm_url }}{% endif %}"
       api_key: "os.environ/ZAI_API_KEY"
 
   - model_name: "glm-4.5-flash"
     litellm_params:
       model: "zai/glm-4.5-flash"
-      api_base: "{{ llm_url }}"
+      api_base: "{% if not llm_url.endswith('/') %}{{ llm_url }}/{% else %}{{ llm_url }}{% endif %}"
       api_key: "os.environ/ZAI_API_KEY"
 
   # Catch-all (Handles any other models passed, using the provider selected during deploy)
@@ -23,7 +23,7 @@ model_list:
     litellm_params:
       model: "{% if llm_provider == 'z.ai' %}zai/{% elif llm_provider == 'gemini' %}{% elif llm_provider == 'ollama' %}ollama/{% elif llm_provider == 'anthropic' %}anthropic/{% elif llm_provider == 'openai' %}openai/{% elif llm_provider == 'openrouter' %}openrouter/{% else %}{{ llm_provider }}/{% endif %}{{ llm_model if (llm_provider != 'z.ai' or not llm_model.startswith('zai/')) else llm_model[4:] }}"
       {% if llm_url and llm_provider != 'gemini' %}
-      api_base: "{{ llm_url }}"
+      api_base: "{% if not llm_url.endswith('/') %}{{ llm_url }}/{% else %}{{ llm_url }}{% endif %}"
       {% endif %}
       api_key: "os.environ/{% if llm_provider == 'z.ai' %}ZAI_API_KEY{% else %}TARGET_LLM_KEY{% endif %}"
 
