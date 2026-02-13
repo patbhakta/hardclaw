@@ -14,6 +14,7 @@ show_help() {
     echo "  --ssh-user USER       Initial SSH User (Default: root for Arch, ubuntu for AWS Ubuntu)"
     echo "  --ssh-key PATH        Path to private key for SSH connection"
     echo "  --mgmt-cidr CIDR      Management Network CIDR (Restricts SSH to this network)"
+    echo "  --local               Deploy to the local machine directly (bypasses SSH)"
     echo "  --ask-pass            Ask for SSH and Sudo passwords"
     echo "  --non-interactive     Fail if missing arguments instead of prompting"
     echo "  -h, --help            Show this help message"
@@ -31,6 +32,7 @@ MGMT_CIDR=""
 INTERACTIVE=true
 ASK_PASS=false
 SSH_KEY=""
+DEPLOY_LOCAL=false
 
 # Parse Arguments
 while [[ "$#" -gt 0 ]]; do
@@ -43,6 +45,7 @@ while [[ "$#" -gt 0 ]]; do
         --ssh-user) SSH_USER="$2"; shift ;;
         --ssh-key) SSH_KEY="$2"; shift ;;
         --mgmt-cidr) MGMT_CIDR="$2"; shift ;;
+        --local) DEPLOY_LOCAL=true ;;
         --ask-pass) ASK_PASS=true ;;
         --non-interactive) INTERACTIVE=false ;;
         -h|--help) show_help; exit 0 ;;
@@ -60,7 +63,7 @@ if [ "$INTERACTIVE" = true ]; then
     echo ""
 
     # Target IP
-    if [ -z "$TARGET_IP" ]; then
+    if [ -z "$TARGET_IP" ] && [ "$DEPLOY_LOCAL" = false ]; then
         read -p "Enter Target Host IP: " TARGET_IP
     fi
 
@@ -149,8 +152,8 @@ fi
 
 # --- Validation ---
 
-if [ -z "$TARGET_IP" ]; then
-    echo "Error: Target IP is required."
+if [ -z "$TARGET_IP" ] && [ "$DEPLOY_LOCAL" = false ]; then
+    echo "Error: Target IP is required unless --local is used."
     exit 1
 fi
 
@@ -163,10 +166,16 @@ if [ -z "$LLM_KEY" ]; then LLM_KEY="sk-placeholder"; fi
 
 # --- Execution ---
 
+if [ "$DEPLOY_LOCAL" = true ] || [ "$TARGET_IP" == "127.0.0.1" ] || [ "$TARGET_IP" == "localhost" ]; then
+    TARGET_DISPLAY="Local Machine (localhost)"
+else
+    TARGET_DISPLAY="$TARGET_IP"
+fi
+
 echo ""
 echo "🚀 Deploying Configuration:"
 echo "----------------------------------------"
-echo "Target:    $TARGET_IP"
+echo "Target:    $TARGET_DISPLAY"
 echo "User:      $SSH_USER"
 if [ ! -z "$SSH_KEY" ]; then echo "SSH Key:   $SSH_KEY"; fi
 echo "OS Check:  Auto-detect (Arch/Debian/Ubuntu)"
@@ -176,7 +185,12 @@ echo "----------------------------------------"
 # Create temporary inventory
 TEMP_INVENTORY=$(mktemp)
 echo "[openclaw_hosts]" > "$TEMP_INVENTORY"
-echo "$TARGET_IP ansible_user=$SSH_USER" >> "$TEMP_INVENTORY"
+
+if [ "$DEPLOY_LOCAL" = true ] || [ "$TARGET_IP" == "127.0.0.1" ] || [ "$TARGET_IP" == "localhost" ]; then
+    echo "localhost ansible_connection=local" >> "$TEMP_INVENTORY"
+else
+    echo "$TARGET_IP ansible_user=$SSH_USER" >> "$TEMP_INVENTORY"
+fi
 
 # Check Local Dependencies
 check_dep() {
