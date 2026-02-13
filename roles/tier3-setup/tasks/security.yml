@@ -30,12 +30,22 @@
     direction: outgoing
     policy: allow
 
-- name: UFW - Allow SSH (Port 22)
+- name: UFW - Allow SSH (Restricted to Management CIDR)
   community.general.ufw:
     rule: allow
     port: '22'
     proto: tcp
-    comment: 'SSH Access'
+    src: "{{ openclaw_mgmt_cidr }}"
+    comment: 'SSH Access (mgmt-only)'
+  when: openclaw_mgmt_cidr | length > 0
+
+- name: UFW - Allow SSH (Global)
+  community.general.ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+    comment: 'SSH Access (global)'
+  when: openclaw_mgmt_cidr | length == 0
 
 - name: UFW - Allow Tailscale (UDP 41641)
   community.general.ufw:

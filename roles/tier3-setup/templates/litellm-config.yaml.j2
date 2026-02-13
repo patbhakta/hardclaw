@@ -1,28 +1,54 @@
+{% if llm_provider == 'ollama' %}
+  {% set lite_provider = 'ollama' %}
+{% elif llm_provider == 'anthropic' %}
+  {% set lite_provider = 'anthropic' %}
+{% elif llm_provider == 'openai' %}
+  {% set lite_provider = 'openai' %}
+{% elif llm_provider == 'openrouter' %}
+  {% set lite_provider = 'openrouter' %}
+{% elif llm_provider == 'z.ai' %}
+  {% set lite_provider = 'openai' %}
+{% elif llm_provider == 'gemini' %}
+  {% set lite_provider = 'gemini' %}
+{% elif llm_provider == 'openai_compatible' %}
+  {% set lite_provider = 'openai' %}
+{% else %}
+  {% set lite_provider = 'ollama' %} 
+{% endif %}
+
 model_list:
   # Route the specific ID requested in the logs
   - model_name: "claude-opus-4-6"
     litellm_params:
-      model: "ollama/{{ llm_model }}"
+      model: "{{ lite_provider }}/{{ llm_model }}"
+      {% if llm_url | length > 0 %}
       api_base: "{{ llm_url }}"
+      {% endif %}
       api_key: "os.environ/TARGET_LLM_KEY"
 
   - model_name: "claude-3-5-sonnet-20240620"
     litellm_params:
-      model: "ollama/{{ llm_model }}"
+      model: "{{ lite_provider }}/{{ llm_model }}"
+      {% if llm_url | length > 0 %}
       api_base: "{{ llm_url }}"
+      {% endif %}
       api_key: "os.environ/TARGET_LLM_KEY"
 
   - model_name: "claude-3-opus-20240229"
     litellm_params:
-      model: "ollama/{{ llm_model }}"
+      model: "{{ lite_provider }}/{{ llm_model }}"
+      {% if llm_url | length > 0 %}
       api_base: "{{ llm_url }}"
+      {% endif %}
       api_key: "os.environ/TARGET_LLM_KEY"
 
   # Catch-all
   - model_name: "*"
     litellm_params:
-      model: "ollama/{{ llm_model }}"
+      model: "{{ lite_provider }}/{{ llm_model }}"
+      {% if llm_url | length > 0 %}
       api_base: "{{ llm_url }}"
+      {% endif %}
       api_key: "os.environ/TARGET_LLM_KEY"
 
 general_settings:

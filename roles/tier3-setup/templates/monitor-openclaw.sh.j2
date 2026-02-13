@@ -1,16 +1,20 @@
 #!/bin/bash
-# OpenClaw Hardened Monitor
-# Automated security check script (Hardening Guide Step 18 & 23)
+# Hardclaw Security Monitor
+# Audits containers and Squid logs for suspicious activity
 
-REPORT_FILE="/home/openclaw/openclaw-docker/security-audit-$(date +%Y%m%d).log"
-echo "=== OpenClaw Security Audit $(date) ===" > "$REPORT_FILE"
+LOG_FILE="/home/openclaw/openclaw-docker/security-audit-$(date +%Y%m%d).log"
+
+echo "==================================================" > "$LOG_FILE"
+echo "   🛡️  Hardclaw Security Monitor Report" >> "$LOG_FILE"
+echo "   Date: $(date)" >> "$LOG_FILE"
+echo "==================================================" >> "$LOG_FILE"
 
 # 1. Run OpenClaw Internal Audit (Step 13)
-echo "[*] Running Internal Security Audit..." >> "$REPORT_FILE"
-podman exec openclaw-agent openclaw security audit --deep >> "$REPORT_FILE" 2>&1
+echo "[*] Running Internal Security Audit..." >> "$LOG_FILE"
+podman exec openclaw-agent openclaw security audit --deep >> "$LOG_FILE" 2>&1
 
 # 2. Check for Prompt Injection Patterns (Step 18)
-echo "[*] Scanning for Prompt Injection Attempts (Last 7 days)..." >> "$REPORT_FILE"
+echo "[*] Scanning for Prompt Injection Attempts (Last 7 days)..." >> "$LOG_FILE"
 find /home/openclaw/openclaw-docker/openclaw-data/agents -name "*.jsonl" -mtime -7 -exec 
   grep -iH "IGNORE PREVIOUS\|SYSTEM:\|DISREGARD\|NEW INSTRUCTIONS" {} \; 
   >> "$REPORT_FILE" 2>/dev/null

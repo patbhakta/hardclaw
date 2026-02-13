@@ -1,10 +1,21 @@
-FROM node:22-alpine
+# Stage 1: Builder
+FROM node:22-alpine AS builder
 
-# Install system dependencies (Git, CMake, and linux-headers are required for dependencies)
+# Install build dependencies
 RUN apk add --no-cache git python3 make g++ cmake linux-headers openssl
 
-# Install OpenClaw globally
+# Install OpenClaw globally in a temporary location to isolate it
+ENV NPM_CONFIG_PREFIX=/install
 RUN npm install -g openclaw@latest
+
+# Stage 2: Runtime
+FROM node:22-alpine
+
+# Install only runtime dependencies (openssl)
+RUN apk add --no-cache openssl
+
+# Copy installed node modules and binaries from builder
+COPY --from=builder /install /usr/local
 
 # Run as non-root user (node:1000)
 USER 1000:1000

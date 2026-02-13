@@ -129,7 +129,7 @@
           fail:
             msg: "Setup failed. Cleaned up temporary key files."
 
-- name: OpenClaw Hardened Tier 3 Deployment (Remote)
+- name: Hardclaw Tier 3 Deployment (Remote)
   hosts: all
   become: true
   vars:

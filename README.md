@@ -1,8 +1,8 @@
-# OpenClaw Hardened Deployment (Ansible)
+# Hardclaw (Ansible)
 
 **Automated Tier 3+ Security Hardening for OpenClaw AI Agents**
 
-This Ansible playbook implements and extends the security hardening measures described in the [OpenClaw Security Guide](https://nextkicklabs.substack.com/p/openclaw-hardened-deployment-security-with-ansible), providing a fully automated deployment with additional defense-in-depth layers.
+This Ansible playbook ("Hardclaw") implements and extends the security hardening measures described in the [OpenClaw Security Guide](https://nextkicklabs.substack.com/p/openclaw-hardened-deployment-security-with-ansible), providing a fully automated deployment with additional defense-in-depth layers.
 
 ## 🎯 What This Playbook Does
 
@@ -27,7 +27,7 @@ Deploys a **hardened OpenClaw installation** with:
 | **OS Support** | Ubuntu focus | **Arch + Debian/Ubuntu auto-detection** |
 | **Deployment Method** | Manual | **Fully automated interactive script** |
 | **Monitoring** | Manual cron | **Systemd timers + audit script** |
-| **LLM Providers** | Anthropic focus | **Ollama (Deepseek) / Anthropic / OpenAI** |
+| **LLM Providers** | Anthropic focus | **Ollama (Deepseek) / Anthropic / OpenAI / OpenRouter / Z.ai / Gemini** |
 | **Secrets Management** | Manual generation | **Auto-gen with PERSISTENCE across runs** ⭐ |
 | **Access Control** | Token only | **Token + Manual Device Pairing** |
 

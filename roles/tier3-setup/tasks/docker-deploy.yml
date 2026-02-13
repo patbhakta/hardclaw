@@ -242,6 +242,7 @@
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][openclaw_user][1] }}"
   register: podman_build_result
+  changed_when: "'Building' in podman_build_result.stdout or 'Step' in podman_build_result.stderr"
 
 - name: Show Podman Build Output
   debug:
@@ -265,7 +266,9 @@
     # Inject variables here so podman-compose sees them for substitution
     LITELLM_MASTER_KEY: "{{ litellm_key }}"
     OPENCLAW_GATEWAY_TOKEN: "{{ openclaw_token }}"
+    OPENCLAW_GATEWAY_TOKEN: "{{ openclaw_token }}"
   register: podman_start_result
+  changed_when: "'Recreating' in podman_start_result.stderr or 'Creating' in podman_start_result.stderr or 'Starting' in podman_start_result.stderr"
 
 - name: Show Podman Start Output
   debug:
@@ -281,6 +284,8 @@
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][openclaw_user][1] }}"
   ignore_errors: true
+  register: doctor_result
+  changed_when: "'Fixed' in doctor_result.stdout"
 
 - name: List All Podman Containers
   command: podman ps -a
