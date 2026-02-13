@@ -17,8 +17,39 @@
 {% endif %}
 
 model_list:
-  # Route the specific ID requested in the logs
-  - model_name: "claude-opus-4-6"
+  # Gemini Routes
+  - model_name: "gemini/*"
+    litellm_params:
+      model: "gemini/$Ssh-Model"
+      api_key: "os.environ/GEMINI_API_KEY"
+      api_base: "os.environ/GEMINI_API_BASE"
+    model_info:
+      base_model: "gemini/*"
+
+  # OpenRouter Routes
+  - model_name: "openrouter/*"
+    litellm_params:
+      model: "openrouter/$Ssh-Model"
+      api_key: "os.environ/OPENROUTER_API_KEY"
+    model_info:
+      base_model: "openrouter/*"
+
+  # Anthropic Routes
+  - model_name: "claude-*"
+    litellm_params:
+      model: "anthropic/$Ssh-Model"
+      api_key: "os.environ/ANTHROPIC_API_KEY"
+    model_info:
+      base_model: "anthropic/*"
+
+  # OpenAI Routes
+  - model_name: "gpt-*"
+    litellm_params:
+      model: "$Ssh-Model"
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  # Primary Deployment Fallback (Legacy names support)
+  - model_name: "primary-fallback"
     litellm_params:
       model: "{{ lite_provider }}/{{ llm_model }}"
       {% if llm_url | length > 0 %}
@@ -26,23 +57,7 @@ model_list:
       {% endif %}
       api_key: "os.environ/TARGET_LLM_KEY"
 
-  - model_name: "claude-3-5-sonnet-20240620"
-    litellm_params:
-      model: "{{ lite_provider }}/{{ llm_model }}"
-      {% if llm_url | length > 0 %}
-      api_base: "{{ llm_url }}"
-      {% endif %}
-      api_key: "os.environ/TARGET_LLM_KEY"
-
-  - model_name: "claude-3-opus-20240229"
-    litellm_params:
-      model: "{{ lite_provider }}/{{ llm_model }}"
-      {% if llm_url | length > 0 %}
-      api_base: "{{ llm_url }}"
-      {% endif %}
-      api_key: "os.environ/TARGET_LLM_KEY"
-
-  # Catch-all
+  # Catch-all using primary deployment settings
   - model_name: "*"
     litellm_params:
       model: "{{ lite_provider }}/{{ llm_model }}"

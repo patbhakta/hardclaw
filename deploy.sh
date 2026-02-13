@@ -136,6 +136,7 @@ if [ "$INTERACTIVE" = true ]; then
              # Default Z.ai URL
              LLM_URL="https://api.z.ai/api/coding/paas/v4"
         fi
+        echo "TIP: You can add more keys for other providers later in /home/openclaw/openclaw-docker/.env"
     fi
 
     # API Key (Conditional)

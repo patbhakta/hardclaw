@@ -48,7 +48,7 @@ Deploys a **hardened OpenClaw installation** with:
 
 ### 1. Prepare
 ```bash
-cd openclaw-hardened-ansible
+cd hardclaw
 chmod +x deploy.sh update-allowlist.sh
 ```
 

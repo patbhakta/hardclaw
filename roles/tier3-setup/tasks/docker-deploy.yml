@@ -38,6 +38,10 @@
   set_fact:
     existing_master_key: ""
     existing_openclaw_token: ""
+    existing_gemini_key: ""
+    existing_openrouter_key: ""
+    existing_anthropic_key: ""
+    existing_openai_key: ""
 
 - name: Check for existing secrets in .env
   slurp:
@@ -55,6 +59,14 @@
     existing_openclaw_token: "{{ (existing_env_file.content | b64decode | regex_findall('OPENCLAW_GATEWAY_TOKEN=(.*)'))[0] | default('') }}"
   when: not existing_env_file.failed
 
+- name: Extract Provider-Specific Keys
+  set_fact:
+    existing_gemini_key: "{{ (existing_env_file.content | b64decode | regex_findall('GEMINI_API_KEY=(.*)'))[0] | default('') }}"
+    existing_openrouter_key: "{{ (existing_env_file.content | b64decode | regex_findall('OPENROUTER_API_KEY=(.*)'))[0] | default('') }}"
+    existing_anthropic_key: "{{ (existing_env_file.content | b64decode | regex_findall('ANTHROPIC_API_KEY=(.*)'))[0] | default('') }}"
+    existing_openai_key: "{{ (existing_env_file.content | b64decode | regex_findall('OPENAI_API_KEY=(.*)'))[0] | default('') }}"
+  when: not existing_env_file.failed
+
 - name: Generate LiteLLM Master Key (if missing)
   command: "openssl rand -base64 32"
   register: litellm_master_key_gen
@@ -69,6 +81,10 @@
   set_fact:
     litellm_key: "{{ existing_master_key if (existing_master_key | length > 0) else litellm_master_key_gen.stdout }}"
     openclaw_token: "{{ existing_openclaw_token if (existing_openclaw_token | length > 0) else openclaw_token_gen.stdout }}"
+    final_gemini_key: "{{ existing_gemini_key if (existing_gemini_key | length > 0) else (llm_key if llm_provider == 'gemini' else '') }}"
+    final_openrouter_key: "{{ existing_openrouter_key if (existing_openrouter_key | length > 0) else (llm_key if llm_provider == 'openrouter' else '') }}"
+    final_anthropic_key: "{{ existing_anthropic_key if (existing_anthropic_key | length > 0) else (llm_key if llm_provider == 'anthropic' else '') }}"
+    final_openai_key: "{{ existing_openai_key if (existing_openai_key | length > 0) else (llm_key if llm_provider == 'openai' else '') }}"
 
 - name: Create .env file for Compose
   template:
