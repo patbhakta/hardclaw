@@ -237,6 +237,23 @@
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][openclaw_user][1] }}"
   ignore_errors: true
 
+- name: Verify Rootless Environment
+  shell: |
+    echo "XDG_RUNTIME_DIR: $XDG_RUNTIME_DIR"
+    podman info || echo "Podman info failed"
+    which podman-compose || echo "podman-compose not found"
+    which podman || echo "podman not found"
+  become: true
+  become_user: "{{ openclaw_user }}"
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][openclaw_user][1] }}"
+  register: podman_diag
+  changed_when: false
+
+- name: Show Diagnostics
+  debug:
+    var: podman_diag.stdout_lines
+
 - name: Rebuild Podman Images
   shell: |
     podman-compose --verbose build
@@ -257,10 +274,10 @@
 
 - name: Start Podman Stack (Rootless)
   shell: |
-    # We pass critical vars via CLI to ensure injection
+    # Explicitly add standard paths to ensure tools are found
+    export PATH=$PATH:/usr/local/bin:/usr/bin
     podman-compose --verbose up -d
-    # Force restart agent to ensure config pick-up
-    podman restart openclaw-agent
+    podman restart openclaw-agent || true
   args:
     chdir: "{{ docker_dir }}"
   become: true
@@ -268,9 +285,7 @@
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][openclaw_user][1] }}"
     DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['getent_passwd'][openclaw_user][1] }}/bus"
-    # Inject variables here so podman-compose sees them for substitution
     LITELLM_MASTER_KEY: "{{ litellm_key }}"
-    OPENCLAW_GATEWAY_TOKEN: "{{ openclaw_token }}"
     OPENCLAW_GATEWAY_TOKEN: "{{ openclaw_token }}"
   register: podman_start_result
   changed_when: "'Recreating' in podman_start_result.stderr or 'Creating' in podman_start_result.stderr or 'Starting' in podman_start_result.stderr"
