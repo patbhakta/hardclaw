@@ -54,19 +54,12 @@
     state: link
   when: uv_check is failed
 
-- name: Install Podman Compose (via uv)
-  command: uv tool install podman-compose
+- name: Install Podman Compose (via uv system-wide)
+  command: uv pip install --system --break-system-packages podman-compose
   register: podman_compose_uv
   ignore_errors: true
 
-- name: Ensure podman-compose is symlinked to /usr/local/bin
-  file:
-    src: "/root/.local/bin/podman-compose"
-    dest: "/usr/local/bin/podman-compose"
-    state: link
-  when: podman_compose_uv is success
-
-# Podman Compose is now handled in the apt task with a pip fallback if needed.
+# Podman Compose is now handled via uv tool install.
 
 # Tailscale Installation
 - name: Add Tailscale GPG Key
