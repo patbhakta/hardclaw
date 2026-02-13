@@ -16,6 +16,7 @@
   {% set lite_provider = 'ollama' %} 
 {% endif %}
 
+model_list:
   # Gemini Routes
   - model_name: "gemini/*"
     litellm_params:
@@ -25,29 +26,13 @@
     model_info:
       base_model: "gemini/*"
 
-  # OpenRouter Routes
-  - model_name: "openrouter/*"
-    litellm_params:
-      model: "openrouter/$model"
-      api_key: "os.environ/OPENROUTER_API_KEY"
-    model_info:
-      base_model: "openrouter/*"
-
-  # Anthropic Routes
-  - model_name: "claude-*"
-    litellm_params:
-      model: "anthropic/$model"
-      api_key: "os.environ/ANTHROPIC_API_KEY"
-    model_info:
-      base_model: "anthropic/*"
-
-  # OpenAI Routes
+  # Z.ai / OpenAI Routes
   - model_name: "gpt-*"
     litellm_params:
       model: "$model"
       api_key: "os.environ/OPENAI_API_KEY"
 
-  # Primary Deployment Fallback (Legacy names support)
+  # Primary Deployment Fallback
   - model_name: "primary-fallback"
     litellm_params:
       model: "{{ lite_provider }}/{{ llm_model }}"
@@ -56,7 +41,7 @@
       {% endif %}
       api_key: "os.environ/TARGET_LLM_KEY"
 
-  # Catch-all using primary deployment settings
+  # Catch-all
   - model_name: "*"
     litellm_params:
       model: "{{ lite_provider }}/{{ llm_model }}"
