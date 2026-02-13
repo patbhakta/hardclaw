@@ -113,7 +113,7 @@ if [ "$INTERACTIVE" = true ]; then
         if [ "$LLM_PROVIDER" == "anthropic" ]; then default_model="claude-3-5-sonnet-20240620"; fi
         if [ "$LLM_PROVIDER" == "openai" ]; then default_model="gpt-4o"; fi
         if [ "$LLM_PROVIDER" == "openrouter" ]; then default_model="qwen/qwen3-vl-235b-a22b-thinking"; fi
-        if [ "$LLM_PROVIDER" == "z.ai" ]; then default_model="z-ai/glm-4.7"; fi
+        if [ "$LLM_PROVIDER" == "z.ai" ]; then default_model="glm-4.7"; fi
         if [ "$LLM_PROVIDER" == "gemini" ]; then default_model="google/gemini-3-flash-preview"; fi
         
         read -p "Enter Model Name [$default_model]: " input_model

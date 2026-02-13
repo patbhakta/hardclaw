@@ -2,28 +2,28 @@ model_list:
   # Route the specific ID requested in the logs
   - model_name: "glm-4.7"
     litellm_params:
-      model: "zai/{{ llm_model }}"
+      model: "zai/glm-4.7"
       api_base: "{{ llm_url }}"
-      api_key: "os.environ/TARGET_LLM_KEY"
+      api_key: "os.environ/ZAI_API_KEY"
 
   - model_name: "glm-4.5v"
     litellm_params:
-      model: "zai/{{ llm_model }}"
+      model: "zai/glm-4.5v"
       api_base: "{{ llm_url }}"
-      api_key: "os.environ/TARGET_LLM_KEY"
+      api_key: "os.environ/ZAI_API_KEY"
 
   - model_name: "glm-4.5-flash"
     litellm_params:
-      model: "zai/{{ llm_model }}"
+      model: "zai/glm-4.5-flash"
       api_base: "{{ llm_url }}"
-      api_key: "os.environ/TARGET_LLM_KEY"
+      api_key: "os.environ/ZAI_API_KEY"
 
-  # Catch-all
+  # Catch-all (Handles any other models passed)
   - model_name: "*"
     litellm_params:
-      model: "zai/{{ llm_model }}"
+      model: "zai/{{ llm_model if not llm_model.startswith('zai/') else llm_model[4:] }}"
       api_base: "{{ llm_url }}"
-      api_key: "os.environ/TARGET_LLM_KEY"
+      api_key: "os.environ/{% if llm_provider == 'z.ai' %}ZAI_API_KEY{% else %}TARGET_LLM_KEY{% endif %}"
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
