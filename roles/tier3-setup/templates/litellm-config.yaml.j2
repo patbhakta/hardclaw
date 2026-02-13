@@ -1,44 +1,28 @@
-{% if llm_provider == 'ollama' %}
-  {% set lite_provider = 'ollama' %}
-{% elif llm_provider == 'anthropic' %}
-  {% set lite_provider = 'anthropic' %}
-{% elif llm_provider == 'openai' %}
-  {% set lite_provider = 'openai' %}
-{% elif llm_provider == 'openrouter' %}
-  {% set lite_provider = 'openrouter' %}
-{% elif llm_provider == 'z.ai' %}
-  {% set lite_provider = 'openai' %}
-{% elif llm_provider == 'gemini' %}
-  {% set lite_provider = 'gemini' %}
-{% elif llm_provider == 'openai_compatible' %}
-  {% set lite_provider = 'openai' %}
-{% else %}
-  {% set lite_provider = 'ollama' %} 
-{% endif %}
-
 model_list:
-  # Z.ai / OpenAI Routes
-  - model_name: "gpt-*"
+  # Route the specific ID requested in the logs
+  - model_name: "glm-4.7"
     litellm_params:
-      model: "$model"
-      api_key: "os.environ/OPENAI_API_KEY"
-
-  # Primary Deployment Fallback
-  - model_name: "primary-fallback"
-    litellm_params:
-      model: "{{ lite_provider }}/{{ llm_model }}"
-      {% if llm_url | length > 0 %}
+      model: "zai/{{ llm_model }}"
       api_base: "{{ llm_url }}"
-      {% endif %}
+      api_key: "os.environ/TARGET_LLM_KEY"
+
+  - model_name: "glm-4.5v"
+    litellm_params:
+      model: "zai/{{ llm_model }}"
+      api_base: "{{ llm_url }}"
+      api_key: "os.environ/TARGET_LLM_KEY"
+
+  - model_name: "glm-4.5-flash"
+    litellm_params:
+      model: "zai/{{ llm_model }}"
+      api_base: "{{ llm_url }}"
       api_key: "os.environ/TARGET_LLM_KEY"
 
   # Catch-all
   - model_name: "*"
     litellm_params:
-      model: "{{ lite_provider }}/{{ llm_model }}"
-      {% if llm_url | length > 0 %}
+      model: "zai/{{ llm_model }}"
       api_base: "{{ llm_url }}"
-      {% endif %}
       api_key: "os.environ/TARGET_LLM_KEY"
 
 general_settings:
