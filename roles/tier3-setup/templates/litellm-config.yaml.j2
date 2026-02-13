@@ -16,11 +16,10 @@
   {% set lite_provider = 'ollama' %} 
 {% endif %}
 
-model_list:
   # Gemini Routes
   - model_name: "gemini/*"
     litellm_params:
-      model: "gemini/$Ssh-Model"
+      model: "gemini/$model"
       api_key: "os.environ/GEMINI_API_KEY"
       api_base: "os.environ/GEMINI_API_BASE"
     model_info:
@@ -29,7 +28,7 @@ model_list:
   # OpenRouter Routes
   - model_name: "openrouter/*"
     litellm_params:
-      model: "openrouter/$Ssh-Model"
+      model: "openrouter/$model"
       api_key: "os.environ/OPENROUTER_API_KEY"
     model_info:
       base_model: "openrouter/*"
@@ -37,7 +36,7 @@ model_list:
   # Anthropic Routes
   - model_name: "claude-*"
     litellm_params:
-      model: "anthropic/$Ssh-Model"
+      model: "anthropic/$model"
       api_key: "os.environ/ANTHROPIC_API_KEY"
     model_info:
       base_model: "anthropic/*"
@@ -45,7 +44,7 @@ model_list:
   # OpenAI Routes
   - model_name: "gpt-*"
     litellm_params:
-      model: "$Ssh-Model"
+      model: "$model"
       api_key: "os.environ/OPENAI_API_KEY"
 
   # Primary Deployment Fallback (Legacy names support)
