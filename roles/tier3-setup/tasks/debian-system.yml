@@ -35,21 +35,36 @@
       - curl
       - gnupg
       - lsb-release
-      - python3-pip
-      - podman
-    state: present
+- name: Check if uv is installed
+  command: uv --version
+  register: uv_check
+  ignore_errors: true
+  changed_when: false
 
-- name: Install Podman Compose (via Apt)
-  apt:
-    name: podman-compose
-    state: present
-  register: podman_compose_apt
+- name: Install uv (Debian/Ubuntu)
+  shell: curl -LsSf https://astral.sh/uv/install.sh | sh
+  when: uv_check is failed
+  environment:
+    HOME: "/root"
+
+- name: Create symlink for uv in /usr/local/bin
+  file:
+    src: "/root/.local/bin/uv"
+    dest: "/usr/local/bin/uv"
+    state: link
+  when: uv_check is failed
+
+- name: Install Podman Compose (via uv)
+  command: uv tool install podman-compose
+  register: podman_compose_uv
   ignore_errors: true
 
-- name: Fallback to PIP with break-system-packages if apt fails
-  command: pip3 install podman-compose --break-system-packages
-  when: podman_compose_apt is failed
-  ignore_errors: true
+- name: Ensure podman-compose is symlinked to /usr/local/bin
+  file:
+    src: "/root/.local/bin/podman-compose"
+    dest: "/usr/local/bin/podman-compose"
+    state: link
+  when: podman_compose_uv is success
 
 # Podman Compose is now handled in the apt task with a pip fallback if needed.
 
