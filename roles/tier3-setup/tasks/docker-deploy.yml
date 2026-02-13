@@ -237,23 +237,6 @@
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][openclaw_user][1] }}"
   ignore_errors: true
 
-- name: Verify Rootless Environment
-  shell: |
-    echo "XDG_RUNTIME_DIR: $XDG_RUNTIME_DIR"
-    podman info || echo "Podman info failed"
-    which podman-compose || echo "podman-compose not found"
-    which podman || echo "podman not found"
-  become: true
-  become_user: "{{ openclaw_user }}"
-  environment:
-    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][openclaw_user][1] }}"
-  register: podman_diag
-  changed_when: false
-
-- name: Show Diagnostics
-  debug:
-    var: podman_diag.stdout_lines
-
 - name: Rebuild Podman Images
   shell: |
     podman-compose --verbose build
