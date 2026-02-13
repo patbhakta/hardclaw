@@ -90,7 +90,7 @@
             -keyout "ssh-keys/{{ generated_hostname }}.key"
             -out "ssh-keys/{{ generated_hostname }}.crt"
             -subj "/CN={{ generated_hostname }}"
-            -addext "subjectAltName=DNS:{{ generated_hostname }},DNS:localhost,IP:{{ groups['all'][0] }},IP:127.0.0.1"
+            -addext "subjectAltName=DNS:{{ generated_hostname }},DNS:localhost,IP:127.0.0.1{{ ',IP:' + groups['all'][0] if groups['all'][0] | regex_search('^[0-9.]+$') else (',DNS:' + groups['all'][0] if groups['all'][0] != 'localhost' else '') }}"
           args:
             creates: "ssh-keys/{{ generated_hostname }}.crt"
 
