@@ -16,6 +16,8 @@
   loop:
     - "{{ docker_dir }}"
     - "{{ data_dir }}"
+    - "{{ data_dir }}/sessions"
+    - "{{ data_dir }}/agents"
     - "{{ ssh_dir }}"
     - "{{ workspace_dir }}"
 
