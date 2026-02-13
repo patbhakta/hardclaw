@@ -17,15 +17,6 @@
 {% endif %}
 
 model_list:
-  # Gemini Routes
-  - model_name: "gemini/*"
-    litellm_params:
-      model: "gemini/$model"
-      api_key: "os.environ/GEMINI_API_KEY"
-      api_base: "os.environ/GEMINI_API_BASE"
-    model_info:
-      base_model: "gemini/*"
-
   # Z.ai / OpenAI Routes
   - model_name: "gpt-*"
     litellm_params:
