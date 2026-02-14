@@ -46,6 +46,17 @@ Deploys a **hardened OpenClaw installation** with:
 
 ## 🚀 Quick Start
 
+### 0. VPS
+```bash
+apt update -y && apt upgrade -y
+apt install ansible git podman podman-compose -y
+curl -LsSf https://astral.sh/uv/install.sh | sh
+curl -fsSL https://tailscale.com/install.sh | sh
+tailscale up
+# authenticate with the URL provided
+reboot
+```
+
 ### 1. Prepare
 ```bash
 cd hardclaw
